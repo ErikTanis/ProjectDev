@@ -69,4 +69,12 @@ public class EventController: Controller
         }
     }
 
+    [HttpGet("test")]
+    public IActionResult Test(){
+        var hehe = "test";
+        Convert.ToInt32(hehe);
+        return Ok();
+    }
+
+
 }

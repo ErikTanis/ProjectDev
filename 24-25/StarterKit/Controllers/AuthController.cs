@@ -81,7 +81,7 @@ public class AuthController(IAuthService service) : Controller
             : BadRequest();
     }
 
-    [HttpPost("change-role"), Authorize(Roles = "Admin")]
+    [HttpPost("change-role"), Authorize, AdminOnly]
     public async Task<IActionResult> ChangeRole([FromBody] ChangeRoleBody body)
     {
         if (string.IsNullOrEmpty(body.Username) || body.Roles is null || body.Roles.Length == 0)
