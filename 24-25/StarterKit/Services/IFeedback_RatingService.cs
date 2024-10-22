@@ -11,4 +11,5 @@ public interface IFeedback_RatingService
     Task<Event_Attendance> GetRatingbackAsync(int eventAttendanceId);
     Task UpdateRatingbackAsync(Event_Attendance eventAttendance);
     Task DeleteRatingbackAsync(int eventAttendanceId);
+    Task<List<Event_Attendance>> GetAllFeedbackAndRatingsAsync();
 }
