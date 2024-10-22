@@ -20,6 +20,7 @@ namespace StarterKit
                 options.Cookie.IsEssential = true;
             });
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IEventService, EventService>();
 
             var app = builder.Build();
             app.EnsureDefaultAccountExistsAsync().Wait();
