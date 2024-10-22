@@ -10,6 +10,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options)
     public DbSet<Event_Attendance> Event_Attendance { get; set; }
     public DbSet<Event> Event { get; set; }
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         base.OnModelCreating(modelBuilder);
 }

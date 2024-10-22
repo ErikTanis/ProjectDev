@@ -3,18 +3,13 @@ using StarterKit.Models;
 namespace StarterKit.Services;
 [ApiController]
 [Route("api/[controller]")]
-public class StatusController : Controller
+public class StatusController(IStatusService statusService) : Controller
 {
-    private readonly IStatusService _statusService;
-
-    public StatusController(IStatusService statusService)
-    {
-        _statusService = statusService;
-    }
+    private readonly IStatusService _statusService = statusService;
 
     //Get the status of an employee
     [HttpGet("GetEmployeeStatus/{employeeId}")]
-    public async Task<IActionResult> GetEmployeeStatus(int employeeId)
+    public async Task<IActionResult> GetEmployeeStatus(string employeeId)
     {
         var status = await _statusService.GetEmployeeStatusAsync(employeeId);
         return Ok(status);
@@ -22,7 +17,7 @@ public class StatusController : Controller
 
     //Update the status of an employee
     [HttpPost("UpdateEmployeeStatus/{employeeId}/{status}")]
-    public async Task<IActionResult> UpdateEmployeeStatus(int employeeId, string status)
+    public async Task<IActionResult> UpdateEmployeeStatus(string employeeId, string status)
     {
         var success = await _statusService.UpdateEmployeeStatusAsync(employeeId, status);
         return Ok(success);

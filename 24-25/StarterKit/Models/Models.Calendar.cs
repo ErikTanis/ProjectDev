@@ -11,12 +11,21 @@ namespace StarterKit.Models
         // A comma sepparated string that could look like this: "mo,tu,we,th,fr"
         public string? RecuringDays { get; set; }
 
+        public WorkingStatus Status { get; set; }
+
         public List<Attendance>? Attendances { get; set; }
 
         public List<Event_Attendance>? Event_Attendances { get; set; }
 
         // Navigation Properties
         public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
+    }
+
+    public enum WorkingStatus
+    {
+        on_premises,
+        from_home,
+        away
     }
 
     public class ApplicationRole : IdentityRole
