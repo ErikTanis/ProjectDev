@@ -10,12 +10,14 @@ public class StatusService : IStatusService
         _context = context;
     }
 
+    //Add a id of an employee and return the status of the employee
     public async Task<string> GetEmployeeStatusAsync(int employeeId)
     {
         var user = await _context.User.FindAsync(employeeId);
         return user.Status.ToString();
     }
 
+    //Add a id of an employee and a status and update the status of the employee
     public async Task<bool> UpdateEmployeeStatusAsync(int employeeId, string status)
     {
         var user = await _context.User.FindAsync(employeeId);
@@ -24,6 +26,7 @@ public class StatusService : IStatusService
         return true;
     }
 
+    //Return all the statuses
     public async Task<IEnumerable<string>> GetAllStatusesAsync()
     {
         return Enum.GetNames(typeof(User.WorkingStatus));

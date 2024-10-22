@@ -12,6 +12,7 @@ public class StatusController : Controller
         _statusService = statusService;
     }
 
+    //Get the status of an employee
     [HttpGet("GetEmployeeStatus/{employeeId}")]
     public async Task<IActionResult> GetEmployeeStatus(int employeeId)
     {
@@ -19,6 +20,7 @@ public class StatusController : Controller
         return Ok(status);
     }
 
+    //Update the status of an employee
     [HttpPost("UpdateEmployeeStatus/{employeeId}/{status}")]
     public async Task<IActionResult> UpdateEmployeeStatus(int employeeId, string status)
     {
@@ -26,6 +28,7 @@ public class StatusController : Controller
         return Ok(success);
     }
 
+    //Get all the statuses
     [HttpGet("GetAllStatuses")]
     public async Task<IActionResult> GetAllStatuses()
     {
