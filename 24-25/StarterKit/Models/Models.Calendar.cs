@@ -1,7 +1,15 @@
 namespace StarterKit.Models
 {
+
     public class User
     {
+        public enum WorkingStatus
+        {
+            on_premises,
+            from_home,
+            away
+        }
+
         public int UserId { get; set; }
 
         public required string FirstName { get; set; }
@@ -11,7 +19,7 @@ namespace StarterKit.Models
         public required string Email { get; set; }
 
         public required string Password { get; set; }
-
+        public WorkingStatus Status { get; set; }
         // A comma sepparated string that could look like this: "mo,tu,we,th,fr"
         public required string RecuringDays { get; set; }
 
