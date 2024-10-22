@@ -1,0 +1,63 @@
+@base_url = http://localhost:5097/api/v1
+// Get Token from login endpoint then copy it here
+@token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJqdGkiOiI2NzZhMjA4ZC1iOWE3LTRkYmQtYTQxOC03ZjYzNTM0MDVmZTQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImYxNzk3OTA0LTczYWMtNGUyNy04YTVmLTgzNzM3M2FkM2E5YiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzI5NTk3ODkxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0In0.87w8CCvVrPcWNsyiv2T72mB8BqTPMOXhU7kefIPlmo8
+
+### Register a new user
+POST {{base_url}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin2",
+  "password": "Password1!",
+  "email": "admin@example.com",
+  "firstName": "Admin",
+  "lastName": "User"
+}
+
+### Login with the user to get the JWT token
+POST {{base_url}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Password2!"
+}
+
+### Revoke the JWT token (copy the token from login response)
+POST {{base_url}}/auth/revoke
+Content-Type: application/json
+Authorization: Bearer {{token}}
+{
+  "token": "{{token}}"
+}
+
+### Change the password of the user
+POST {{base_url}}/auth/change-password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+{
+  "username": "admin",
+  "password": "Password1!",
+  "newPassword": "Password2!"
+}
+
+### Change the role of the user
+POST {{base_url}}/auth/change-role
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "username": "admin2",
+  "roles":[ "admin"]
+}
+
+### Update the user first name and/or last name
+POST {{base_url}}/auth/update-user
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "username": "admin",
+  "firstName": "AdminChanged",
+  "lastName": "UserChanged"
+}

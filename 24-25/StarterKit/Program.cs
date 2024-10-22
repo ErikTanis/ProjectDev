@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-using StarterKit.Models;
 using StarterKit.Services;
+using StarterKit.Utils;
 
 namespace StarterKit
 {
@@ -8,31 +7,26 @@ namespace StarterKit
     {
         static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args)
+                .ConfigureDatabase()
+                .ConfigureAuthentication();
 
             builder.Services.AddControllersWithViews();
-
             builder.Services.AddDistributedMemoryCache();
-
-            builder.Services.AddSession(options => 
+            builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(10);
-                options.Cookie.HttpOnly = true; 
-                options.Cookie.IsEssential = true; 
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
-
-            builder.Services.AddScoped<ILoginService, LoginService>();
-
-            builder.Services.AddDbContext<DatabaseContext>(
-                options => options.UseSqlite(builder.Configuration.GetConnectionString("SqlLiteDb")));
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             var app = builder.Build();
+            app.EnsureDefaultAccountExistsAsync().Wait();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -41,6 +35,7 @@ namespace StarterKit
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSession();
@@ -50,7 +45,6 @@ namespace StarterKit
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
-
         }
     }
 }

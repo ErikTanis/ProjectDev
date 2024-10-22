@@ -1,23 +1,32 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace StarterKit.Models
 {
-    public class User
+    public class ApplicationUser : IdentityUser
     {
-        public int UserId { get; set; }
-
         public required string FirstName { get; set; }
 
         public required string LastName { get; set; }
 
-        public required string Email { get; set; }
+        public string? RecuringDays { get; set; }
 
-        public required string Password { get; set; }
+        public List<Attendance>? Attendances { get; set; }
 
-        // A comma sepparated string that could look like this: "mo,tu,we,th,fr"
-        public required string RecuringDays { get; set; }
+        public List<Event_Attendance>? Event_Attendances { get; set; }
 
-        public required List<Attendance> Attendances { get; set; }
+        // Navigation Properties
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
+    }
 
-        public required List<Event_Attendance> Event_Attendances { get; set; }
+    public class ApplicationRole : IdentityRole
+    {
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
+    }
+
+    public class ApplicationUserRole : IdentityUserRole<string>
+    {
+        public virtual ApplicationUser User { get; set; }
+        public virtual ApplicationRole Role { get; set; }
     }
 
     public class Attendance
@@ -26,7 +35,7 @@ namespace StarterKit.Models
 
         public DateTime AttendanceDate { get; set; }
 
-        public required User User { get; set; }
+        public required ApplicationUser User { get; set; }
     }
 
     public class Event_Attendance
@@ -34,7 +43,7 @@ namespace StarterKit.Models
         public int Event_AttendanceId { get; set; }
         public int Rating { get; set; }
         public required string Feedback { get; set; }
-        public required User User { get; set; }
+        public required ApplicationUser User { get; set; }
         public required Event Event { get; set; }
     }
 
