@@ -8,6 +8,7 @@ namespace StarterKit.Models
 
         public required string LastName { get; set; }
 
+        // A comma sepparated string that could look like this: "mo,tu,we,th,fr"
         public string? RecuringDays { get; set; }
 
         public List<Attendance>? Attendances { get; set; }
