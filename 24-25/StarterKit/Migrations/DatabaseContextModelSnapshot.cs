@@ -248,7 +248,7 @@ namespace StarterKit.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Attendance");
+                    b.ToTable("Attendance", (string)null);
                 });
 
             modelBuilder.Entity("StarterKit.Models.Event", b =>
@@ -283,7 +283,7 @@ namespace StarterKit.Migrations
 
                     b.HasKey("EventId");
 
-                    b.ToTable("Event");
+                    b.ToTable("Event", (string)null);
                 });
 
             modelBuilder.Entity("StarterKit.Models.Event_Attendance", b =>
@@ -311,7 +311,7 @@ namespace StarterKit.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Event_Attendance");
+                    b.ToTable("Event_Attendance", (string)null);
                 });
 
             modelBuilder.Entity("StarterKit.Models.ApplicationUserRole", b =>

@@ -1,0 +1,7 @@
+POST http://localhost:5097/api/v1/auth/change-role
+Content-Type: application/json
+
+{
+    "Username": "ErikT",
+    "Roles": ["Admin"]
+}

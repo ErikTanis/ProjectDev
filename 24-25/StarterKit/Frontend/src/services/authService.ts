@@ -42,5 +42,16 @@ export const authService = {
 
   logout: async (token: string): Promise<void> => {
     await axios.post(`${API_URL}/revoke`, { token });
-  }
+  },
+
+	checkAdmin: async (token: string): Promise<{ isAdmin: boolean }> => {
+		try {
+			const response = await axios.get(`${API_URL}/is-admin`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			return { isAdmin: response.status === 200 };
+		} catch (error) {
+			throw new Error('Failed to check admin status');
+		}
+	}
 };

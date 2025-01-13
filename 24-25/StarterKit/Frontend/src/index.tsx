@@ -7,18 +7,21 @@ import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import './styles.css';
 import Register from '~pages/Register';
-import { TermsAndConditions } from '~pages/TermsAndConditions';
+import TermsAndConditions from '~pages/TermsAndConditions';
+import TopNavBar from '~components/TopNavBar';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <div className="dark">
       <AuthProvider>
         <Router>
+          <TopNavBar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path='/termsandconditions' element={<TermsAndConditions />} />
+            <Route path='/terms-and-conditions' element={<TermsAndConditions />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Router>
       </AuthProvider>

@@ -124,7 +124,7 @@ const Register: React.FC = () => {
 							<div>
 								<label htmlFor="confirm-password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
 								<input 
-									type="confirm-password" 
+									type="password" 
 									name="confirm-password" 
 									id="confirm-password" 
 									placeholder="••••••••" 
@@ -145,7 +145,7 @@ const Register: React.FC = () => {
 										/>
 								</div>
 								<div className="ml-3 text-sm">
-									<label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">I accept the <a className="font-medium text-primary-600 hover:underline dark:text-primary-500" href="./TermsAndConditions">Terms and Conditions</a></label>
+									<label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">I accept the <a className="font-medium text-primary-600 hover:underline dark:text-primary-500" href="./terms-and-conditions">Terms and Conditions</a></label>
 								</div>
 							</div>
 							<button type="submit" className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Create an account</button>
