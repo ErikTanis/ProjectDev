@@ -8,13 +8,15 @@ public class HomeController : Controller
 {
     private readonly ILogger<AuthController> _logger;
 
-
     public HomeController(ILogger<AuthController> logger)
     {
         _logger = logger;
     }
 
-    [HttpGet("{**slug}")]
+    [HttpGet("/")]
+    [HttpGet("/login")]
+    [HttpGet("/register")]
+    [HttpGet("/TermsAndConditions")]
     public IActionResult Index()
     {
         return View();

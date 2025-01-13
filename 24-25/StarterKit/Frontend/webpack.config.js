@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require("webpack");
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
-
 module.exports = {
     mode: 'none', //Can also be development or production https://webpack.js.org/configuration/mode/
     entry: {
@@ -16,7 +15,14 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".CSS"]
+        extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".CSS"],
+        alias: {
+            '~components': path.resolve(__dirname, 'src/components'),
+            '~contexts': path.resolve(__dirname, 'src/contexts'),
+            '~hooks': path.resolve(__dirname, 'src/hooks'),
+            '~pages': path.resolve(__dirname, 'src/pages'),
+            '~services': path.resolve(__dirname, 'src/services'),
+        }
     },
 
     module: {
@@ -29,7 +35,11 @@ module.exports = {
 
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader'],
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'postcss-loader'
+                ],
             },
             {
                 test: /\.(png|jpg|gif)$/,

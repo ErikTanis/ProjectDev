@@ -16,6 +16,7 @@ using StarterKit.Services;
 namespace StarterKit.Controllers;
 
 [Route("api/v1/auth")]
+[ApiController]
 public class AuthController(IAuthService service) : Controller
 {
     private readonly IAuthService _service = service;
