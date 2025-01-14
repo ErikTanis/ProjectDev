@@ -16,25 +16,38 @@ const Register: React.FC = () => {
   const [matchError, setMatchError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const totalSteps = 6; // Total number of form steps
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const from = (location.state as any)?.from?.pathname || "/";
 
-  const validateField = (field: string, value: string): string => {
-    switch (field) {
-      case "firstName":
-      case "lastName":
-        return value.length < 2 ? "Must be at least 2 characters" : "";
-      case "email":
-        return !value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
-          ? "Invalid email format"
-          : "";
-      case "username":
-        return value.length < 3 ? "Must be at least 3 characters" : "";
-      case "password":
-        return value.length < 6 ? "Must be at least 6 characters" : "";
-      default:
-        return "";
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      if (password !== passwordConfirm) {
+        setMatchError("Passwords do not match");
+        return;
+      }
+      const success = await register({
+        username,
+        password,
+        email,
+        firstName,
+        lastName,
+      });
+      if (success) {
+        await login({ username, password });
+        navigate(from, { replace: true });
+      }
+    } catch (err: any) {
+      console.error("Registration error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const nextStep = () => {
+    if (step < totalSteps) {
+      setStep(step + 1);
     }
   };
 
@@ -42,113 +55,6 @@ const Register: React.FC = () => {
     if (step > 1) {
       setStep(step - 1);
     }
-  };
-
-  const nextStep = () => {
-    let currentFieldError = "";
-
-    switch (step) {
-      case 1:
-        currentFieldError = validateField("firstName", firstName);
-        if (currentFieldError) {
-          setErrors({ firstName: currentFieldError });
-          return;
-        }
-        break;
-      case 2:
-        currentFieldError = validateField("lastName", lastName);
-        if (currentFieldError) {
-          setErrors({ lastName: currentFieldError });
-          return;
-        }
-        break;
-      case 3:
-        currentFieldError = validateField("email", email);
-        if (currentFieldError) {
-          setErrors({ email: currentFieldError });
-          return;
-        }
-        break;
-      case 4:
-        currentFieldError = validateField("username", username);
-        if (currentFieldError) {
-          setErrors({ username: currentFieldError });
-          return;
-        }
-        break;
-      case 5:
-        currentFieldError = validateField("password", password);
-        if (currentFieldError) {
-          setErrors({ password: currentFieldError });
-          return;
-        }
-        break;
-    }
-
-    setErrors({});
-    if (step < totalSteps) {
-      setStep(step + 1);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrors({});
-
-    try {
-      if (password !== passwordConfirm) {
-        setMatchError("Passwords do not match");
-        return;
-      }
-
-      // Validate all fields before submission
-      const allFields = {
-        firstName,
-        lastName,
-        email,
-        username,
-        password,
-      };
-
-      const fieldErrors: { [key: string]: string } = {};
-      Object.entries(allFields).forEach(([field, value]) => {
-        const error = validateField(field, value);
-        if (error) fieldErrors[field] = error;
-      });
-
-      if (Object.keys(fieldErrors).length > 0) {
-        setErrors(fieldErrors);
-        setIsLoading(false);
-        return;
-      }
-
-      const success = await register({
-        username: username.trim(),
-        password,
-        email: email.trim(),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-      });
-
-      if (success) {
-        await login({ username, password });
-        navigate(from, { replace: true });
-      }
-    } catch (err: any) {
-      console.error("Registration error:", err);
-      setErrors({ submit: "Registration failed. Please try again." });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const renderFieldError = (fieldName: string) => {
-    return (
-      errors[fieldName] && (
-        <div className="text-red-500 text-sm mt-1">{errors[fieldName]}</div>
-      )
-    );
   };
 
   const renderStep = () => {
@@ -165,12 +71,9 @@ const Register: React.FC = () => {
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
-              className={`w-full bg-gray-50 border-2 text-gray-900 text-sm ${
-                errors.firstName ? "border-red-500" : "focus:border-primary-600"
-              } pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="Enter first name"
             />
-            {renderFieldError("firstName")}
           </div>
         );
       case 2:
@@ -185,12 +88,9 @@ const Register: React.FC = () => {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
-              className={`w-full bg-gray-50 border-2 text-gray-900 text-sm ${
-                errors.lastName ? "border-red-500" : "focus:border-primary-600"
-              } pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="Enter last name"
             />
-            {renderFieldError("lastName")}
           </div>
         );
       case 3:
@@ -205,12 +105,9 @@ const Register: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className={`w-full bg-gray-50 border-2 text-gray-900 text-sm ${
-                errors.email ? "border-red-500" : "focus:border-primary-600"
-              } pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="name@company.com"
             />
-            {renderFieldError("email")}
           </div>
         );
       case 4:
@@ -225,12 +122,9 @@ const Register: React.FC = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className={`w-full bg-gray-50 border-2 text-gray-900 text-sm ${
-                errors.username ? "border-red-500" : "focus:border-primary-600"
-              } pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="Enter username"
             />
-            {renderFieldError("username")}
           </div>
         );
       case 5:
@@ -245,12 +139,9 @@ const Register: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className={`w-full bg-gray-50 border-2 text-gray-900 text-sm ${
-                errors.password ? "border-red-500" : "focus:border-primary-600"
-              } pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="••••••••"
             />
-            {renderFieldError("password")}
           </div>
         );
       case 6:
@@ -328,12 +219,6 @@ const Register: React.FC = () => {
               )}
 
               {renderStep()}
-
-              {errors.submit && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                  {errors.submit}
-                </div>
-              )}
 
               <div className="flex justify-between gap-4 mt-8">
                 {step > 1 && (
