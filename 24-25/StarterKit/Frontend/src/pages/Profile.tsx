@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useAuth } from "~hooks/useAuth";
-import { FiUser, FiMail, FiEdit2, FiKey, FiSave, FiX } from "react-icons/fi";
 
 const Profile = () => {
   const { user, updateUser, changePassword } = useAuth();
@@ -57,8 +56,8 @@ const Profile = () => {
           <div className="relative h-48 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700">
             <div className="absolute bottom-0 left-0 w-full transform translate-y-1/2 flex justify-center">
               <div className="h-32 w-32 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden bg-gray-200 dark:bg-gray-700">
-                <div className="h-full w-full flex items-center justify-center text-gray-400">
-                  <FiUser size={64} />
+                <div className="h-full w-full flex items-center justify-center text-gray-400 text-5xl font-bold">
+                  {user?.firstName?.[0]?.toUpperCase() || "?"}
                 </div>
               </div>
             </div>
@@ -79,7 +78,6 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
               <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 shadow-sm">
                 <div className="flex items-center mb-4">
-                  <FiMail />
                   <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
                     Contact Information
                   </h2>
@@ -106,7 +104,6 @@ const Profile = () => {
 
               <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 shadow-sm">
                 <div className="flex items-center mb-4">
-                  <FiUser />
                   <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
                     Personal Information
                   </h2>
@@ -137,17 +134,15 @@ const Profile = () => {
               {!isEditing && !isChangingPassword && (
                 <>
                   <button
-                    className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
                     onClick={() => setIsEditing(true)}
                   >
-                    <FiEdit2 />
                     Edit Profile
                   </button>
                   <button
-                    className="flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
                     onClick={() => setIsChangingPassword(true)}
                   >
-                    <FiKey />
                     Change Password
                   </button>
                 </>
