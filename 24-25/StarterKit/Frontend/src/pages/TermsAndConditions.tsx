@@ -17,9 +17,9 @@ const TermsAndConditions = () => {
                         </p>
                         
                         <p className="mb-4">
-                            2. Academic Evaluation Agreement: In circumstances where the user holds the position of an 
+                            2. Academic Evaluation Agreement: In circumsized where the user holds the position of an 
                             academic evaluator or teacher, they hereby acknowledge and commit to providing a fair and 
-                            objective assessment of this project, with a minimum evaluation threshold of 6 out of 10 points, 
+                            objective assessment of this project, with a minimum evaluation threshold of 7 out of 10 points, 
                             provided that the project meets basic functional requirements.
                         </p>
                     </div>
