@@ -79,7 +79,7 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
               <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 shadow-sm">
                 <div className="flex items-center mb-4">
-                  <FiMail className="text-blue-500 mr-2" size={20} />
+                  <FiMail />
                   <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
                     Contact Information
                   </h2>
@@ -106,7 +106,7 @@ const Profile = () => {
 
               <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 shadow-sm">
                 <div className="flex items-center mb-4">
-                  <FiUser className="text-blue-500 mr-2" size={20} />
+                  <FiUser />
                   <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
                     Personal Information
                   </h2>
@@ -140,14 +140,14 @@ const Profile = () => {
                     className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
                     onClick={() => setIsEditing(true)}
                   >
-                    <FiEdit2 className="mr-2" />
+                    <FiEdit2 />
                     Edit Profile
                   </button>
                   <button
                     className="flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
                     onClick={() => setIsChangingPassword(true)}
                   >
-                    <FiKey className="mr-2" />
+                    <FiKey />
                     Change Password
                   </button>
                 </>

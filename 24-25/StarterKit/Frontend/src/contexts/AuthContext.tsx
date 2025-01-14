@@ -22,7 +22,11 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => Promise<void>;
   error: string | null;
-  updateUser?: (userData: Partial<User>) => Promise<boolean>;
+  updateUser: (firstName: string, lastName: string) => Promise<boolean>;
+  changePassword: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<boolean>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -92,11 +96,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [token]);
 
   const updateUser = useCallback(
-    async (userData: Partial<User>) => {
+    async (firstName: string, lastName: string) => {
       try {
-        if (!user) return false;
+        if (!user?.username || !token) return false;
 
-        const updatedUser = { ...user, ...userData };
+        await authService.updateUser({
+          username: user.username,
+          firstName,
+          lastName,
+        });
+
+        const updatedUser = { ...user, firstName, lastName };
         setUser(updatedUser);
         localStorage.setItem("user", JSON.stringify(updatedUser));
         return true;
@@ -105,7 +115,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return false;
       }
     },
-    [user]
+    [user, token]
+  );
+
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      try {
+        if (!user?.username || !token) return false;
+
+        await authService.changePassword({
+          username: user.username,
+          password: currentPassword,
+          newPassword: newPassword,
+        });
+        return true;
+      } catch (err: any) {
+        setError(err.message || "Failed to change password");
+        return false;
+      }
+    },
+    [user, token]
   );
 
   return (
@@ -119,6 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         logout,
         error,
         updateUser,
+        changePassword,
       }}
     >
       {children}

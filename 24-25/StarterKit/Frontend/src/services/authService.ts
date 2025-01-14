@@ -57,4 +57,20 @@ export const authService = {
       throw new Error("Failed to check admin status");
     }
   },
+
+  async updateUser(data: {
+    username: string;
+    firstName: string;
+    lastName: string;
+  }): Promise<void> {
+    await axios.post(`${API_URL}/update-user`, data);
+  },
+
+  async changePassword(data: {
+    username: string;
+    password: string;
+    newPassword: string;
+  }): Promise<void> {
+    await axios.post(`${API_URL}/change-password`, data);
+  },
 };
