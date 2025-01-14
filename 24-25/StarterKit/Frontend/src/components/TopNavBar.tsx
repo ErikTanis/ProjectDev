@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '~hooks/useAuth';
 import { authService } from '~services/authService';
 
@@ -27,14 +27,14 @@ export default function TopNavBar() {
             <div className="container mx-auto px-6 py-3">
                 <div className="flex items-center justify-between">
                     <div className="hidden w-full text-gray-600 dark:text-gray-300 md:flex md:items-center">
-                        <Link to="/" className="hover:text-gray-800 dark:hover:text-white">Home</Link>
+                        <a href="/" className="hover:text-gray-800 dark:hover:text-white">Home</a>
                         {isAdmin && (
-                            <Link to="/admin" className="ml-4 hover:text-gray-800 dark:hover:text-white">Admin Dashboard</Link>
+                            <a href="/admin" className="ml-4 hover:text-gray-800 dark:hover:text-white">Admin Dashboard</a>
                         )}
                     </div>
                     
                     <div className="w-full text-gray-700 dark:text-white md:text-center text-2xl font-semibold">
-                        <Link to="/">EventHub</Link>
+                        <a href="/">EventHub</a>
                     </div>
 
                     <div className="flex items-center justify-end w-full">
@@ -49,19 +49,19 @@ export default function TopNavBar() {
                                     </span>
                                     <img
                                         className="h-8 w-8 rounded-full object-cover"
-                                        src="images/profile.png"
+                                        src="/images/profile.png"
                                         alt="profile"
                                     />
                                 </button>
 
                                 {isProfileMenuOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-grey dark:bg-gray-700 rounded-md shadow-lg py-1">
-                                        <Link 
-                                            to="/profile" 
+                                        <a 
+                                            href="/profile" 
                                             className="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600"
                                         >
                                             Profile
-                                        </Link>
+                                        </a>
                                         <button
                                             onClick={handleLogout}
                                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600"
@@ -73,18 +73,18 @@ export default function TopNavBar() {
                             </div>
                         ) : (
                             <div className="flex items-center">
-                                <Link 
-                                    to="/login"
+                                <a 
+                                    href="/login"
                                     className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-gray-300 mx-2"
                                 >
                                     Login
-                                </Link>
-                                <Link 
-                                    to="/register"
+                                </a>
+                                <a 
+                                    href="/register"
                                     className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-gray-300 mx-2"
                                 >
                                     Register
-                                </Link>
+                                </a>
                             </div>
                         )}
                     </div>

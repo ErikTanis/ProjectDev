@@ -51,7 +51,7 @@ export default function Home() {
             <div
               key={event.eventId}
               onClick={() => handleEventClick(event.eventId)}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300 ease-in-out"
+              className="bg-grey dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300 ease-in-out"
             >
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {event.title}
@@ -60,7 +60,7 @@ export default function Home() {
                 {event.description}
               </p>
               <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                <span>{new Date(`${event.eventDate}T${event.endTime}`).toLocaleDateString()}</span>
+                <span>{event.eventDate.split("-")[2]}-{event.eventDate.split("-")[1]}-{event.eventDate.split("-")[0]} {event.startTime.slice(0, 5)}-{event.endTime.slice(0, 5)}</span>
                 <span>{event.location}</span>
               </div>
             </div>
