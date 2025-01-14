@@ -18,6 +18,7 @@ public class HomeController : Controller
     [HttpGet("/register")]
     [HttpGet("/terms-and-conditions")]
     [HttpGet("/admin")]
+    [HttpGet("/Profile")]
     public IActionResult Index()
     {
         return View();

@@ -1,10 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = '/api/v1/auth';
+const API_URL = "/api/v1/auth";
 
 export interface LoginResponse {
   token: string;
-  refreshToken: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  roles?: string[];
 }
 
 export interface LoginCredentials {
@@ -13,29 +16,29 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
-	username: string;
-	password: string;
-	email: string;
-	firstName: string;
-	lastName: string;
+  username: string;
+  password: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }
 
 export const authService = {
-	register: async (credentials: RegisterCredentials): Promise<void> => {
-		try {
-			await axios.post(`${API_URL}/register`, credentials);
-		} catch (error: any) {
-			const errorMessage = error.response?.data?.title || 'Registration failed';
-			throw new Error(errorMessage);
-		}
-	},
+  register: async (credentials: RegisterCredentials): Promise<void> => {
+    try {
+      await axios.post(`${API_URL}/register`, credentials);
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.title || "Registration failed";
+      throw new Error(errorMessage);
+    }
+  },
 
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     try {
       const response = await axios.post(`${API_URL}/login`, credentials);
       return response.data;
     } catch (error: any) {
-      const errorMessage = error.response?.data?.title || 'Login failed';
+      const errorMessage = error.response?.data?.title || "Login failed";
       throw new Error(errorMessage);
     }
   },
@@ -44,14 +47,14 @@ export const authService = {
     await axios.post(`${API_URL}/revoke`, { token });
   },
 
-	checkAdmin: async (token: string): Promise<{ isAdmin: boolean }> => {
-		try {
-			const response = await axios.get(`${API_URL}/is-admin`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			return { isAdmin: response.status === 200 };
-		} catch (error) {
-			throw new Error('Failed to check admin status');
-		}
-	}
+  checkAdmin: async (token: string): Promise<{ isAdmin: boolean }> => {
+    try {
+      const response = await axios.get(`${API_URL}/is-admin`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { isAdmin: response.status === 200 };
+    } catch (error) {
+      throw new Error("Failed to check admin status");
+    }
+  },
 };
