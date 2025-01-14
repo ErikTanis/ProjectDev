@@ -37,20 +37,62 @@ public class AuthController(IAuthService service) : Controller
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterBody body)
     {
-        if (body is null || !ModelState.IsValid)
-            return BadRequest(ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList());
-        if (await _service.GetByUsername(body.Username) is not null)
-            return BadRequest();
-        if (await _service.GetByEmail(body.Email) is not null)
-            return BadRequest();
+        try 
+        {
+            // Log the incoming request data
+            Console.WriteLine($"Received registration request: Username={body.Username}, Email={body.Email}, FirstName={body.FirstName}, LastName={body.LastName}");
+            
+            if (body is null || !ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                Console.WriteLine($"Validation errors: {string.Join(", ", errors)}");
+                return BadRequest(errors);
+            }
 
-        var result = await _service.RegisterAsync(
-            body.Username,
-            body.Password,
-            body.Email,
-            body.FirstName,
-            body.LastName);
-        return result ? Ok("Registered") : BadRequest();
+            // Check for null or empty values
+            if (string.IsNullOrWhiteSpace(body.Username) || 
+                string.IsNullOrWhiteSpace(body.Password) ||
+                string.IsNullOrWhiteSpace(body.Email) ||
+                string.IsNullOrWhiteSpace(body.FirstName) ||
+                string.IsNullOrWhiteSpace(body.LastName))
+            {
+                return BadRequest(new[] { "All fields are required" });
+            }
+
+            // Check username
+            if (await _service.GetByUsername(body.Username) is not null)
+            {
+                return BadRequest(new[] { "Username already exists" });
+            }
+
+            // Check email
+            if (await _service.GetByEmail(body.Email) is not null)
+            {
+                return BadRequest(new[] { "Email already exists" });
+            }
+
+            // Attempt registration
+            var result = await _service.RegisterAsync(
+                body.Username.Trim(),
+                body.Password,
+                body.Email.Trim().ToLower(),
+                body.FirstName.Trim(),
+                body.LastName.Trim());
+
+            if (!result)
+            {
+                Console.WriteLine("Registration failed in service layer");
+                return BadRequest(new[] { "Unable to create user" });
+            }
+
+            return Ok(new { message = "Registration successful" });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Registration error: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            return BadRequest(new[] { "An error occurred during registration" });
+        }
     }
 
     [HttpPost("revoke"), Authorize]
