@@ -3,46 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace StarterKit.Migrations
 {
     /// <inheritdoc />
-    public partial class added_auth : Migration
+    public partial class FixEf : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Attendance_User_UserId",
-                table: "Attendance");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Event_Attendance_User_UserId",
-                table: "Event_Attendance");
-
-            migrationBuilder.DropTable(
-                name: "Admin");
-
-            migrationBuilder.DropTable(
-                name: "User");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "UserId",
-                table: "Event_Attendance",
-                type: "TEXT",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "INTEGER");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "UserId",
-                table: "Attendance",
-                type: "TEXT",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "INTEGER");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -65,6 +33,7 @@ namespace StarterKit.Migrations
                     FirstName = table.Column<string>(type: "TEXT", nullable: false),
                     LastName = table.Column<string>(type: "TEXT", nullable: false),
                     RecuringDays = table.Column<string>(type: "TEXT", nullable: true),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -83,6 +52,25 @@ namespace StarterKit.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Event",
+                columns: table => new
+                {
+                    EventId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    EventDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
+                    Location = table.Column<string>(type: "TEXT", nullable: false),
+                    AdminApproval = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Event", x => x.EventId);
                 });
 
             migrationBuilder.CreateTable(
@@ -152,10 +140,7 @@ namespace StarterKit.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false),
-                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 34, nullable: false),
-                    UserId1 = table.Column<string>(type: "TEXT", nullable: true),
-                    RoleId1 = table.Column<string>(type: "TEXT", nullable: true)
+                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -167,20 +152,8 @@ namespace StarterKit.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId1",
-                        column: x => x.RoleId1,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -203,6 +176,52 @@ namespace StarterKit.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Attendance",
+                columns: table => new
+                {
+                    AttendanceId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AttendanceDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Attendance", x => x.AttendanceId);
+                    table.ForeignKey(
+                        name: "FK_Attendance_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Event_Attendance",
+                columns: table => new
+                {
+                    Event_AttendanceId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Rating = table.Column<int>(type: "INTEGER", nullable: false),
+                    Feedback = table.Column<string>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    EventId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Event_Attendance", x => x.Event_AttendanceId);
+                    table.ForeignKey(
+                        name: "FK_Event_Attendance_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Event_Attendance_Event_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Event",
+                        principalColumn: "EventId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -233,16 +252,6 @@ namespace StarterKit.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_RoleId1",
-                table: "AspNetUserRoles",
-                column: "RoleId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_UserId1",
-                table: "AspNetUserRoles",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -253,32 +262,25 @@ namespace StarterKit.Migrations
                 column: "NormalizedUserName",
                 unique: true);
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Attendance_AspNetUsers_UserId",
+            migrationBuilder.CreateIndex(
+                name: "IX_Attendance_UserId",
                 table: "Attendance",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id");
+                column: "UserId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Event_Attendance_AspNetUsers_UserId",
+            migrationBuilder.CreateIndex(
+                name: "IX_Event_Attendance_EventId",
                 table: "Event_Attendance",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id");
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Event_Attendance_UserId",
+                table: "Event_Attendance",
+                column: "UserId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Attendance_AspNetUsers_UserId",
-                table: "Attendance");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Event_Attendance_AspNetUsers_UserId",
-                table: "Event_Attendance");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -295,96 +297,19 @@ namespace StarterKit.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Attendance");
+
+            migrationBuilder.DropTable(
+                name: "Event_Attendance");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "UserId",
-                table: "Event_Attendance",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: 0,
-                oldClrType: typeof(string),
-                oldType: "TEXT",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<int>(
-                name: "UserId",
-                table: "Attendance",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: 0,
-                oldClrType: typeof(string),
-                oldType: "TEXT",
-                oldNullable: true);
-
-            migrationBuilder.CreateTable(
-                name: "Admin",
-                columns: table => new
-                {
-                    AdminId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false),
-                    UserName = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Admin", x => x.AdminId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
-                    LastName = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false),
-                    RecuringDays = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.UserId);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Admin",
-                columns: new[] { "AdminId", "Email", "Password", "UserName" },
-                values: new object[,]
-                {
-                    { 1, "admin1@example.com", "^�H��(qQ��o��)'s`=\rj���*�rB�", "admin1" },
-                    { 2, "admin2@example.com", "\\N@6��G��Ae=j_��a%0�QU��\\", "admin2" },
-                    { 3, "admin3@example.com", "�j\\��f������x�s+2��D�o���", "admin3" },
-                    { 4, "admin4@example.com", "�].��g��Պ��t��?��^�T��`aǳ", "admin4" },
-                    { 5, "admin5@example.com", "E�=���:�-����gd����bF��80]�", "admin5" }
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Admin_UserName",
-                table: "Admin",
-                column: "UserName",
-                unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Attendance_User_UserId",
-                table: "Attendance",
-                column: "UserId",
-                principalTable: "User",
-                principalColumn: "UserId",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Event_Attendance_User_UserId",
-                table: "Event_Attendance",
-                column: "UserId",
-                principalTable: "User",
-                principalColumn: "UserId",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.DropTable(
+                name: "Event");
         }
     }
 }

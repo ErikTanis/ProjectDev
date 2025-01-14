@@ -54,12 +54,14 @@ public class AuthService(UserManager<ApplicationUser> userManager, IConfiguratio
         var jti = Guid.NewGuid().ToString();
         await _userManager.SetAuthenticationTokenAsync(user, "JWT", "AccessToken", jti);
         SymmetricSecurityKey signingKey = new(Encoding.UTF8.GetBytes(jwtKey));
-        List<Claim> claims = [
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var claims = new List<Claim>
+        {
             new Claim(ClaimTypes.Name, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, jti),
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Role, "Admin")
-        ];
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+        };
+        claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         return GenerateToken(claims, signingKey);
     }

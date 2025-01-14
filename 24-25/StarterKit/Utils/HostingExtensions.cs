@@ -35,8 +35,7 @@ public static class HostingExtensions
         var jwtExpireMinutes = builder.Configuration["Jwt:ExpireMinutes"];
         ArgumentNullException.ThrowIfNullOrEmpty(jwtExpireMinutes, "Jwt:ExpireMinutes is missing in appsettings.json");
 
-        builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddRoleManager<RoleManager<ApplicationRole>>()
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders()
             .Services.AddAuthentication(options =>
@@ -99,16 +98,16 @@ public static class HostingExtensions
         ArgumentNullException.ThrowIfNullOrEmpty(email, "DefaultAdmin:Email is missing in appsettings.json");
 
         using var scope = builder.Services.CreateScope();
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         if (await roleManager.FindByNameAsync("admin") is null)
         {
-            var result = await roleManager.CreateAsync(new ApplicationRole { Name = "admin" });
+            var result = await roleManager.CreateAsync(new IdentityRole { Name = "admin" });
             if(!result.Succeeded){
                 throw new Exception("Failed to create admin role.");}
         }
         if (await roleManager.FindByNameAsync("user") is null)
         {
-            var result = await roleManager.CreateAsync(new ApplicationRole { Name = "user" });
+            var result = await roleManager.CreateAsync(new IdentityRole { Name = "user" });
             if (!result.Succeeded)
                 throw new Exception("Failed to create user role.");
         }

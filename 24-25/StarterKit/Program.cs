@@ -37,6 +37,9 @@ namespace StarterKit
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseExceptionHandler("/Home/Error");
 
             app.Use(async (context, next) => {
@@ -64,8 +67,9 @@ namespace StarterKit
                 }
             });
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            // Remove these duplicate lines
+            // app.UseAuthentication();
+            // app.UseAuthorization();
 
             app.UseSession();
 

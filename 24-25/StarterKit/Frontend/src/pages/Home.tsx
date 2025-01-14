@@ -49,18 +49,18 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
             <div
-              key={event.id}
-              onClick={() => handleEventClick(event.id)}
+              key={event.eventId}
+              onClick={() => handleEventClick(event.eventId)}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300 ease-in-out"
             >
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {event.name}
+                {event.title}
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {event.description}
               </p>
               <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                <span>{new Date(event.date).toLocaleDateString()}</span>
+                <span>{new Date(`${event.eventDate}T${event.endTime}`).toLocaleDateString()}</span>
                 <span>{event.location}</span>
               </div>
             </div>

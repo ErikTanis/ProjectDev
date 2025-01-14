@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace StarterKit.Models;
 
 public class DatabaseContext(DbContextOptions<DatabaseContext> options)
-    : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
+    : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Attendance> Attendance { get; set; }
     public DbSet<Event_Attendance> Event_Attendance { get; set; }

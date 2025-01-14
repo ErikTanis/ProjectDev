@@ -95,7 +95,7 @@ public class AuthController(IAuthService service) : Controller
             : BadRequest();
     }
 
-    [HttpPost("update-user"), Authorize(Roles = "Admin")]
+    [HttpPost("update-user"), Authorize(Roles = "admin")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserBody body)
     {
         if (string.IsNullOrEmpty(body.FirstName) && string.IsNullOrEmpty(body.LastName))
@@ -112,7 +112,7 @@ public class AuthController(IAuthService service) : Controller
             : BadRequest();
     }
 
-    [HttpGet("is-admin"), Authorize(Roles = "Admin")]
+    [HttpGet("is-admin"), Authorize(Roles = "admin")]
     public IActionResult IsAdmin() => Ok();
 
 

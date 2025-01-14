@@ -16,9 +16,6 @@ namespace StarterKit.Models
         public List<Attendance>? Attendances { get; set; }
 
         public List<Event_Attendance>? Event_Attendances { get; set; }
-
-        // Navigation Properties
-        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
     }
 
     public enum WorkingStatus
@@ -26,17 +23,6 @@ namespace StarterKit.Models
         on_premises,
         from_home,
         away
-    }
-
-    public class ApplicationRole : IdentityRole
-    {
-        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
-    }
-
-    public class ApplicationUserRole : IdentityUserRole<string>
-    {
-        public virtual ApplicationUser User { get; set; }
-        public virtual ApplicationRole Role { get; set; }
     }
 
     public class Attendance
