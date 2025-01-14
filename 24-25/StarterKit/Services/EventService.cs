@@ -15,7 +15,11 @@ public class EventService : IEventService
 
     public async Task<IEnumerable<Event>?> GetAllEventsAsync()
     {
-        return await _context.Event.ToListAsync();
+        var events = await _context.Event.ToListAsync();
+        events.ForEach(e => {
+            if(e.Event_Attendances == null) e.Event_Attendances ??= [];
+        });
+        return events;
     }
 
     public async Task<Event?> GetEventAsync(int ID){

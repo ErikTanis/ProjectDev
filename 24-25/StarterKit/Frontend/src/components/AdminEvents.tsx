@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react"
 import { getAllEvents, Event } from "~services/eventService";
+import EditEvent from "./EditEvent";
 
 export default function AdminEvents() {
     const [events, setEvents] = useState<Event[]>([])
     const [error, setError] = useState<string | null>(null)
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -18,7 +21,7 @@ export default function AdminEvents() {
         };
 
         fetchEvents();
-    }, []);
+    }, [isEditing]);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -39,6 +42,16 @@ export default function AdminEvents() {
                     <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
                         {error}
                     </div>
+                )}
+
+                {isEditing && editingEvent && (
+                    <EditEvent 
+                        {...editingEvent} 
+                        onClose={() => {
+                            setIsEditing(false);
+                            setEditingEvent(null);
+                        }}
+                    />
                 )}
 
                 <div className="grid grid-cols-1 gap-4">
@@ -65,6 +78,10 @@ export default function AdminEvents() {
                                     </div>
                                 </div>
                                 <a
+                                    onClick={() => {
+                                        setIsEditing(true);
+                                        setEditingEvent(event);
+                                    }}
                                     href="#"
                                     className="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium text-sm"
                                 >

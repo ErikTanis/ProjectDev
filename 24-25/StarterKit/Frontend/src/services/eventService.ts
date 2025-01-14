@@ -21,7 +21,7 @@ export interface Event {
     endTime: string;
     location: string;
     adminApproval: boolean;
-    event_Attendances: Attendance[] | null;
+    event_Attendances: Attendance[];
 }
 
 export const getEvents = async (): Promise<Event[]> => {
@@ -43,3 +43,12 @@ export const getAllEvents = async (): Promise<Event[]> => {
         throw new Error('Failed to fetch events. Please try again later.');
     }
 };
+
+export const updateEvent = async (event: Event): Promise<boolean> => {
+    try {
+        const response = await axios.put('/api/event', event)
+				return response.status === 200
+    } catch (error) {
+			throw new Error('Failed to update event.')
+		}
+}

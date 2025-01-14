@@ -3,5 +3,22 @@ Content-Type: application/json
 
 {
     "Username": "ErikT",
-    "Roles": ["Admin"]
+    "Roles": ["admin"]
+}
+
+###
+
+POST http://localhost:5097/api/event
+Content-Type: application/json
+
+{
+    "EventId": 3,
+    "Title": "Test event 3",
+    "Description": "Placeholder...",
+    "EventDate": "2025-04-01",
+    "StartTime": "09:00:00",
+    "EndTime": "09:30:00",
+    "Location": "Ouddorp",
+    "AdminApproval": false,
+    "Event_Attendances" : []
 }
