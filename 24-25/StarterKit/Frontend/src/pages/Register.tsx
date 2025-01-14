@@ -15,31 +15,60 @@ const Register: React.FC = () => {
   const [lastName, setLastName] = useState("");
   const [matchError, setMatchError] = useState<string | null>(null);
   const [step, setStep] = useState(1);
-  const totalSteps = 6; // Total number of form steps
+  const totalSteps = 3; // Changed from 6 to 3 steps
+  const [errors, setErrors] = useState<string[]>([]);
 
   const from = (location.state as any)?.from?.pathname || "/";
+
+  const validateFields = () => {
+    const newErrors: string[] = [];
+
+    if (firstName.length < 2)
+      newErrors.push("First name must be at least 2 characters");
+    if (lastName.length < 2)
+      newErrors.push("Last name must be at least 2 characters");
+    if (username.length < 3)
+      newErrors.push("Username must be at least 3 characters");
+    if (password.length < 6)
+      newErrors.push("Password must be at least 6 characters");
+    if (password !== passwordConfirm) newErrors.push("Passwords do not match");
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
+      newErrors.push("Invalid email format");
+
+    setErrors(newErrors);
+    return newErrors.length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors([]);
+
     try {
-      if (password !== passwordConfirm) {
-        setMatchError("Passwords do not match");
+      if (!validateFields()) {
+        setIsLoading(false);
         return;
       }
-      const success = await register({
-        username,
-        password,
-        email,
-        firstName,
-        lastName,
-      });
+
+      const userData = {
+        username: username.trim(),
+        password: password,
+        email: email.trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+      };
+
+      const success = await register(userData);
       if (success) {
-        await login({ username, password });
+        await login({
+          username: userData.username,
+          password: userData.password,
+        });
         navigate(from, { replace: true });
       }
     } catch (err: any) {
       console.error("Registration error:", err);
+      setErrors([err.message || "Registration failed. Please try again."]);
     } finally {
       setIsLoading(false);
     }
@@ -61,92 +90,87 @@ const Register: React.FC = () => {
     switch (step) {
       case 1:
         return (
-          <div>
-            <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
-              First Name
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
-              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="Enter first name"
-            />
+          <div className="space-y-4">
+            <div>
+              <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
+                First Name
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="Enter first name"
+              />
+            </div>
+            <div>
+              <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
+                Last Name
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="Enter last name"
+              />
+            </div>
           </div>
         );
       case 2:
         return (
-          <div>
-            <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
-              Last Name
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
-              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="Enter last name"
-            />
+          <div className="space-y-4">
+            <div>
+              <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="Enter username"
+              />
+            </div>
+            <div>
+              <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="name@company.com"
+              />
+            </div>
           </div>
         );
       case 3:
         return (
-          <div>
-            <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="name@company.com"
-            />
-          </div>
-        );
-      case 4:
-        return (
-          <div>
-            <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="Enter username"
-            />
-          </div>
-        );
-      case 5:
-        return (
-          <div>
-            <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-              placeholder="••••••••"
-            />
-          </div>
-        );
-      case 6:
-        return (
-          <>
+          <div className="space-y-4">
+            <div>
+              <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full bg-gray-50 border-2 text-gray-900 text-sm focus:border-primary-600 pl-4 pr-12 py-3.5 outline-none rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="••••••••"
+              />
+            </div>
             <div>
               <label className="text-gray-800 dark:text-white text-sm font-semibold block mb-2">
                 Confirm Password
@@ -182,7 +206,7 @@ const Register: React.FC = () => {
                 </label>
               </div>
             </div>
-          </>
+          </div>
         );
       default:
         return null;
@@ -192,16 +216,8 @@ const Register: React.FC = () => {
   return (
     <div className="md:h-screen font-[sans-serif] p-4 bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col justify-center items-center h-full">
-        <div className="grid md:grid-cols-2 items-center gap-y-8 max-w-7xl w-full shadow-[0_2px_13px_-6px_rgba(0,0,0,0.4)] rounded-xl relative overflow-hidden">
-          <div className="max-md:order-1 p-4 bg-gray-50 dark:bg-gray-800 h-full">
-            <img
-              src="https://readymadeui.com/signin-image.webp"
-              className="max-w-[90%] w-full h-full object-contain block mx-auto"
-              alt="login-image"
-            />
-          </div>
-
-          <div className="flex items-center p-6 max-w-md w-full h-full mx-auto">
+        <div className="max-w-md w-full shadow-[0_2px_13px_-6px_rgba(0,0,0,0.4)] rounded-xl relative overflow-hidden">
+          <div className="flex items-center p-6 w-full h-full mx-auto bg-gray-50 dark:bg-gray-800">
             <form
               className="w-full space-y-4 md:space-y-6"
               onSubmit={handleSubmit}
@@ -212,9 +228,12 @@ const Register: React.FC = () => {
                 </h3>
               </div>
 
-              {(authError || matchError) && (
+              {(errors.length > 0 || authError) && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                  {authError || matchError}
+                  {errors.map((error, index) => (
+                    <div key={index}>{error}</div>
+                  ))}
+                  {authError && <div>{authError}</div>}
                 </div>
               )}
 
