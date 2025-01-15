@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { getAllEvents, Event } from "~services/eventService";
 import EditEvent from "../components/EditEvent";
 import CreateEvent from "../components/CreateEvent"; // Add this import
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "~hooks/useAuth";
 import { authService } from "~services/authService";
 
@@ -17,6 +17,7 @@ export default function AdminEvents() {
     
     const { isAuthenticated, token } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
 			const checkAdminStatus = async () => {
@@ -76,6 +77,10 @@ export default function AdminEvents() {
         setIsCreating(true);
     };
 
+    const handleEventClick = (eventId: number) => {
+        navigate(`/event/${eventId}`);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -125,6 +130,10 @@ export default function AdminEvents() {
                             <div className="flex justify-between items-start">
                                 <div>
                                     <a
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleEventClick(event.eventId);
+                                        }}
                                         href="#"
                                         className="text-xl font-semibold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-500"
                                     >

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "~hooks/useAuth";
-import { getEvents, Event, addAttendance } from '../services/eventService';
+import { getEvents, Event, addAttendance, deleteAttendance, getEventAttendance } from '../services/eventService';
 
 export default function Home() {
   const { isAuthenticated, token } = useAuth();
@@ -9,12 +9,28 @@ export default function Home() {
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [error, setError] = useState<string | null>(null);
-  
+  const [attendedEvents, setAttendedEvents] = useState<number[]>([]);
+  const userFullName = `${localStorage.getItem('firstName')} ${localStorage.getItem('lastName')}`;
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const fetchedEvents = await getEvents();
         setEvents(fetchedEvents);
+        
+        if (token) {
+          const attendancePromises = fetchedEvents.map(event => 
+            getEventAttendance(event.eventId, token)
+          );
+          const attendanceResults = await Promise.all(attendancePromises);
+          
+          const attended = fetchedEvents
+            .filter((_, index) => attendanceResults[index].includes(userFullName))
+            .map(event => event.eventId);
+          
+          setAttendedEvents(attended);
+        }
+        
         setError(null);
       } catch (error) {
         setError(error instanceof Error ? error.message : 'An unexpected error occurred');
@@ -23,7 +39,7 @@ export default function Home() {
     };
 
     fetchEvents();
-  }, []);
+  }, [token, userFullName]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
@@ -34,17 +50,22 @@ export default function Home() {
   };
 
   const handleAttendEvent = async (eventId: number) => {
-    try{
-      const success = await addAttendance(eventId, token!)
-      if(success){
-        console.log('Successfully attended event');
+    try {
+      if (attendedEvents.includes(eventId)) {
+        const success = await deleteAttendance(eventId, token!);
+        if (success) {
+          setAttendedEvents(prev => prev.filter(id => id !== eventId));
+        }
       } else {
-        setError('Failed to attend event. Please try again later.');
+        const success = await addAttendance(eventId, token!);
+        if (success) {
+          setAttendedEvents(prev => [...prev, eventId]);
+        }
       }
     } catch (error) {
-      setError('Failed to attend event. Please try again later.');
+      setError('Failed to update attendance. Please try again later.');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -72,9 +93,13 @@ export default function Home() {
                   e.stopPropagation();
                   handleAttendEvent(event.eventId);
                 }}
-                className="absolute top-4 right-4 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium transition-colors duration-200"
+                className={`absolute top-4 right-4 px-3 py-1 ${
+                  attendedEvents.includes(event.eventId)
+                    ? 'bg-green-500 hover:bg-green-600'
+                    : 'bg-blue-500 hover:bg-blue-600'
+                } text-white rounded-full text-sm font-medium transition-colors duration-200`}
               >
-                Attend +
+                {attendedEvents.includes(event.eventId) ? 'Attending' : 'Attend +'}
               </button>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {event.title}

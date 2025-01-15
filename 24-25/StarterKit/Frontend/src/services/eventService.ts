@@ -24,6 +24,7 @@ export interface Event {
     event_Attendances: Attendance[];
 }
 
+
 export const getEvents = async (): Promise<Event[]> => {
     try {
         const response = await axios.get('/api/event');
@@ -83,5 +84,36 @@ export const addAttendance = async (eventId: number, token: string): Promise<boo
         return response.status === 200;
     } catch (error) {
         throw new Error('Failed to add attendance.');
+    }
+}
+
+export const getEvent = async (eventId: number, token: string): Promise<Event> => {
+    try {
+        const response = await axios.get(`/api/event/${eventId}`);
+        return response.data
+    } catch (error) {
+        throw new Error('Failed to fetch events. Please try again later.');
+    }
+}
+
+export const getEventAttendance = async (eventId: number, token: string): Promise<string[]> => {
+    try {
+        const response = await axios.get(`/api/v1/attendance/${eventId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to delete event.');
+    }
+}
+
+export const deleteAttendance = async(eventId: number, token: string) : Promise<boolean> => {
+    try {
+        const response = await axios.delete(`/api/v1/attendance/${eventId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.status === 200;
+    } catch (error) {
+        throw new Error('Failed to delete event.');
     }
 }

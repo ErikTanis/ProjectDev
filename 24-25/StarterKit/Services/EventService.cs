@@ -84,4 +84,25 @@ public class EventService : IEventService
         return true;
     }
 
+    public async Task<bool> DeleteAttendanceAsync(int ID, string? userId){
+        var existingEvent = await _context.Event.FindAsync(ID);
+        if (existingEvent == null)
+        {
+            return false;
+        }
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return false;
+        }
+        var existingAttendance = await _context.Event_Attendance.FirstOrDefaultAsync(ea => ea.Event.EventId == ID && ea.User.Id == user.Id);
+        if (existingAttendance == null)
+        {
+            return false;
+        }
+        _context.Event_Attendance.Remove(existingAttendance);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
 }

@@ -10,6 +10,7 @@ import Register from '~pages/Register';
 import TermsAndConditions from '~pages/TermsAndConditions';
 import TopNavBar from '~components/TopNavBar';
 import AdminEvents from '~pages/AdminEvents';
+import EventComponent from '~components/EventComponent';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path='/terms-and-conditions' element={<TermsAndConditions />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/events" element={<AdminEvents />} />
+            <Route path="/event/:id" element={<EventComponent />} />
           </Routes>
         </Router>
       </AuthProvider>
