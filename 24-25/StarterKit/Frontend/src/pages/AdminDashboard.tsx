@@ -61,7 +61,10 @@ const AdminDashboard: React.FC = () => {
             {/* TODO: ... */}
             <div className="pl-4 border-l-4 border-blue-500">
               <p className="mb-4">
-                Welcome to the admin dashboard! This page is only accessible to admin users and will be fixed soon :)
+                Welcome to the admin dashboard!
+              </p>
+              <p className="mb-4">
+                Click the Events tab to create, edit, or delete events.
               </p>
             </div>
           </div>

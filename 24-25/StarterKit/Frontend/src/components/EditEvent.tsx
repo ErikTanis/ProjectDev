@@ -1,5 +1,6 @@
-import { Event, updateEvent } from "~services/eventService"
+import { deleteEvent, Event, updateEvent } from "~services/eventService"
 import { useState } from "react"
+import { useAuth } from "~hooks/useAuth";
 
 interface EditEventProps extends Event {
     onClose: () => void;
@@ -8,6 +9,8 @@ interface EditEventProps extends Event {
 export default function EditEvent({ onClose, ...event }: EditEventProps) {
     const [editingField, setEditingField] = useState<string | null>(null);
     const [formData, setFormData] = useState<Event>(event);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const { token } = useAuth();
 
     const handleInputChange = (field: string, value: string | boolean) => {
         setFormData(prev => ({
@@ -16,11 +19,17 @@ export default function EditEvent({ onClose, ...event }: EditEventProps) {
         }));
     };
 
-		const handleSubmit = async () => {
-			const success = await updateEvent(formData);
-			if(success) onClose();
-			// TODO: display error
-		}
+    const handleSubmit = async () => {
+        const success = await updateEvent(formData);
+        if(success) onClose();
+        // TODO: display error
+    }
+
+    const handleDelete = async () => {
+        setShowDeleteConfirm(false);
+        const success = await deleteEvent(formData.eventId, token!);
+        if(success) onClose();
+    }
 
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full">
@@ -167,20 +176,52 @@ export default function EditEvent({ onClose, ...event }: EditEventProps) {
                         </div>
                     </div>
 
-                    <div className="mt-6 flex justify-end space-x-4">
+                    <div className="mt-6 flex justify-between items-center">
                         <button
-                            onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-grey border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+                            onClick={() => setShowDeleteConfirm(true)}
+                            className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 transition-colors"
                         >
-                            Cancel
+                            Delete Event
                         </button>
-                        <button
-                            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md shadow-sm hover:bg-primary-700 dark:hover:bg-primary-500"
-														onClick={handleSubmit}
-												>
-                            Save Changes
-                        </button>
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={onClose}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-grey border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md shadow-sm hover:bg-primary-700 dark:hover:bg-primary-500"
+                                onClick={handleSubmit}
+                            >
+                                Save Changes
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Delete Confirmation Modal */}
+                    {showDeleteConfirm && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl">
+                                <h3 className="text-lg font-semibold mb-4">Confirm Deletion</h3>
+                                <p className="mb-6">Are you sure you want to delete this event?</p>
+                                <div className="flex justify-end space-x-4">
+                                    <button
+                                        onClick={() => setShowDeleteConfirm(false)}
+                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleDelete}
+                                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -115,6 +115,13 @@ public class AuthController(IAuthService service) : Controller
     [HttpGet("is-admin"), Authorize(Roles = "admin")]
     public IActionResult IsAdmin() => Ok();
 
+    public record UserInfo(string FirstName, string LastName, string Email, string Username, bool IsAdmin);
+    [HttpGet("user"), Authorize]
+    public async Task<IActionResult> GetUser(){
+        var user = await _service.GetByUsername(User.FindFirst(ClaimTypes.Name)?.Value!);
+        return user is null ? NotFound() : Ok(new UserInfo(user.FirstName, user.LastName, user.Email!, user.UserName!, User.IsInRole("admin")));
+    }
+
 
 }
 

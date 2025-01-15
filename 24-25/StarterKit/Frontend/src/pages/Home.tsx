@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "~hooks/useAuth";
-import { getEvents, Event } from '../services/eventService';
+import { getEvents, Event, addAttendance } from '../services/eventService';
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
@@ -33,6 +33,19 @@ export default function Home() {
     navigate(`/event/${eventId}`);
   };
 
+  const handleAttendEvent = async (eventId: number) => {
+    try{
+      const success = await addAttendance(eventId, token!)
+      if(success){
+        console.log('Successfully attended event');
+      } else {
+        setError('Failed to attend event. Please try again later.');
+      }
+    } catch (error) {
+      setError('Failed to attend event. Please try again later.');
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -51,8 +64,18 @@ export default function Home() {
             <div
               key={event.eventId}
               onClick={() => handleEventClick(event.eventId)}
-              className="bg-grey dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300 ease-in-out"
+              className="relative bg-grey dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition duration-300 ease-in-out"
             >
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAttendEvent(event.eventId);
+                }}
+                className="absolute top-4 right-4 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-sm font-medium transition-colors duration-200"
+              >
+                Attend +
+              </button>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {event.title}
               </h2>

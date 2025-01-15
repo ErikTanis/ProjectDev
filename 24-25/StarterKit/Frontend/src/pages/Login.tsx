@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '~hooks/useAuth';
+import { authService } from '~services/authService';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login, error: authError } = useAuth();
+  const { login, error: authError, userInfo } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const from = (location.state as any)?.from?.pathname || '/';
+  
+    
+  const from = (location.state as any)?.from?.pathname || '/admin';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ const Login: React.FC = () => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">

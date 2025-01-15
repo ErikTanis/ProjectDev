@@ -9,7 +9,7 @@ import './styles.css';
 import Register from '~pages/Register';
 import TermsAndConditions from '~pages/TermsAndConditions';
 import TopNavBar from '~components/TopNavBar';
-import AdminEvents from '~components/AdminEvents';
+import AdminEvents from '~pages/AdminEvents';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -1,12 +1,43 @@
 import { useEffect, useState } from "react"
 import { getAllEvents, Event } from "~services/eventService";
-import EditEvent from "./EditEvent";
+import EditEvent from "../components/EditEvent";
+import CreateEvent from "../components/CreateEvent"; // Add this import
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "~hooks/useAuth";
+import { authService } from "~services/authService";
 
 export default function AdminEvents() {
     const [events, setEvents] = useState<Event[]>([])
     const [error, setError] = useState<string | null>(null)
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+    const [isCreating, setIsCreating] = useState<boolean>(false); // Add this state
+    const [isLoading, setIsLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
+    
+    const { isAuthenticated, token } = useAuth();
+    const location = useLocation();
+
+    useEffect(() => {
+			const checkAdminStatus = async () => {
+				if (!token) {
+					setIsAdmin(false);
+					setIsLoading(false);
+					return;
+				}
+
+				try {
+					const response = await authService.checkAdmin(token);
+					setIsAdmin(response.isAdmin);
+				} catch (error) {
+					setIsAdmin(false);
+				} finally {
+					setIsLoading(false);
+				}
+			};
+
+			checkAdminStatus();
+    }, [token]);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -21,7 +52,29 @@ export default function AdminEvents() {
         };
 
         fetchEvents();
-    }, [isEditing]);
+    }, [isEditing, isCreating]);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-3xl mx-auto bg-grey dark:bg-gray-800 rounded-lg shadow-md p-8">
+                    <p className="text-gray-700 dark:text-gray-300">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!isAdmin) {
+        return <Navigate to="/" state={{ from: location }} replace />;
+    }
+
+		const handleCreateEvent = () => {
+        setIsCreating(true);
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -32,6 +85,7 @@ export default function AdminEvents() {
                     </h1>
                     <a
                         href="#"
+												onClick={handleCreateEvent}
                         className="bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                     >
                         Create New Event
@@ -50,6 +104,14 @@ export default function AdminEvents() {
                         onClose={() => {
                             setIsEditing(false);
                             setEditingEvent(null);
+                        }}
+                    />
+                )}
+
+                {isCreating && (
+                    <CreateEvent
+                        onClose={() => {
+                            setIsCreating(false);
                         }}
                     />
                 )}

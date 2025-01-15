@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 export interface User {
-
+    
 }
 
 export interface Attendance {
@@ -51,4 +51,37 @@ export const updateEvent = async (event: Event): Promise<boolean> => {
     } catch (error) {
 			throw new Error('Failed to update event.')
 		}
+}
+
+export const deleteEvent = async (eventId: number, token: string): Promise<boolean> => {
+    try {
+        const response = await axios.delete(`/api/event/${eventId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.status === 200;
+    } catch (error) {
+        throw new Error('Failed to delete event.');
+    }
+}
+
+export const createEvent = async(event: Event): Promise<boolean> => {
+    try {
+        event.startTime += ':00';
+        event.endTime += ':00';
+        const response = await axios.post('/api/event', event)
+        return response.status === 200
+    } catch (error) {
+        throw new Error('Failed to create event.')
+    }
+}
+
+export const addAttendance = async (eventId: number, token: string): Promise<boolean> => {
+    try {
+        const response = await axios.post(`/api/v1/attendance/${eventId}`, null, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.status === 200;
+    } catch (error) {
+        throw new Error('Failed to add attendance.');
+    }
 }

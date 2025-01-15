@@ -8,6 +8,7 @@ public interface IEventService
     public Task<IEnumerable<string>?> GetEventAttendanceAsync(int ID);
     public Task AddEventAsync(Event e);
     public Task EditEventAsync(Event e);
-    public Task DeleteEventAsync(string ID);
+    public Task DeleteEventAsync(int ID);
+    public Task<bool> AddAttendanceAsync(int ID, string? userId);
 
 }

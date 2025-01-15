@@ -10,12 +10,12 @@ export default function AdminSideBar() {
                         >
                             <span className="ml-2">Events</span>
                         </a>
-                        <a 
+                        {/* <a 
                             href="/admin/users"
                             className="flex items-center px-4 py-2 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
                         >
                             <span className="ml-2">Users</span>
-                        </a>
+                        </a> */}
                     </div>
                 </div>
             </nav>

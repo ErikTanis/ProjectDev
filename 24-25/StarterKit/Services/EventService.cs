@@ -33,6 +33,10 @@ public class EventService : IEventService
 
     public async Task AddEventAsync(Event e)
     {
+        var maxId = _context.Event.Any() 
+            ? await _context.Event.MaxAsync(e => e.EventId) 
+            : 0;
+        e.EventId = maxId + 1;
         await _context.Event.AddAsync(e);
         await _context.SaveChangesAsync();
     }
@@ -48,7 +52,7 @@ public class EventService : IEventService
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteEventAsync(string ID)
+    public async Task DeleteEventAsync(int ID)
     {
         var existingEvent = await _context.Event.FindAsync(ID);
         if (existingEvent == null)
@@ -56,6 +60,28 @@ public class EventService : IEventService
             throw new Exception("Event not found!");
         }
         _context.Event.Remove(existingEvent);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> AddAttendanceAsync(int ID, string? userId){
+        var existingEvent = await _context.Event.FindAsync(ID);
+        if (existingEvent == null)
+        {
+            return false;
+        }
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return false;
+        }
+        var existingAttendance = await _context.Event_Attendance.FirstOrDefaultAsync(ea => ea.Event.EventId == ID && ea.User.Id == user.Id);
+        if (existingAttendance != null)
+        {
+            return false;
+        }
+        await _context.Event_Attendance.AddAsync(new Event_Attendance { Event = existingEvent, User = user, Feedback = "" });
+        await _context.SaveChangesAsync();
+        return true;
     }
 
 }

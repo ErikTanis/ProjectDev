@@ -20,6 +20,14 @@ export interface RegisterCredentials {
 	lastName: string;
 }
 
+export interface UserInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  isAdmin: boolean;
+}
+
 export const authService = {
 	register: async (credentials: RegisterCredentials): Promise<void> => {
 		try {
@@ -53,5 +61,17 @@ export const authService = {
 		} catch (error) {
 			throw new Error('Failed to check admin status');
 		}
-	}
+	},
+
+	getUserInfo: async (token: string): Promise<UserInfo> => {
+		try {
+			const response = await axios.get(`${API_URL}/user`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			return response.data;
+		} catch (error) {
+			throw new Error('Failed to fetch user info');
+		}
+	},
+
 };

@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Models;
 using StarterKit.Services;
@@ -24,7 +25,7 @@ public class EventController: Controller
         return Ok( events );
     }
 
-    [HttpGet("/{ID}")]
+    [HttpGet("{ID}")]
     public async Task<IActionResult> GetEvent(int ID){
         Event? e = await _eventService.GetEventAsync(ID);
         if(e == null){
@@ -33,7 +34,7 @@ public class EventController: Controller
         return Ok( e );
     }
 
-    [HttpGet("/{ID}/attendance")]
+    [HttpGet("{ID}/attendance")]
     public async Task<IActionResult> GetEventAttendance(int ID){
         IEnumerable<string>? attendance = await _eventService.GetEventAttendanceAsync(ID);
         return Ok( attendance );
@@ -59,8 +60,8 @@ public class EventController: Controller
         }
     }
 
-    [HttpDelete("/{ID}")]
-    public async Task<IActionResult> DeleteEvent(string ID){
+    [HttpDelete("{ID}"), Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteEvent(int ID){
         try{
             await _eventService.DeleteEventAsync(ID);
             return Ok("Event has been deleted!");

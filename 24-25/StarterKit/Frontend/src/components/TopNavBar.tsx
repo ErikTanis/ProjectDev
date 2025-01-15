@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '~hooks/useAuth';
 import { authService } from '~services/authService';
 
 export default function TopNavBar() {
-    const { isAuthenticated, logout, token } = useAuth();
+    const { isAuthenticated, logout, token, userInfo } = useAuth();
     const navigate = useNavigate();
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-    const user = { username: 'John Doe' }; // TODO: Replace with actual user data from auth context
     const [isAdmin, setIsAdmin] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if(token === null) return;
@@ -16,6 +16,19 @@ export default function TopNavBar() {
             setIsAdmin(response.isAdmin);
         });
     }, [token]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsProfileMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -39,13 +52,13 @@ export default function TopNavBar() {
 
                     <div className="flex items-center justify-end w-full">
                         {isAuthenticated ? (
-                            <div className="relative">
+                            <div className="relative" ref={menuRef}>
                                 <button 
                                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                                     className="flex items-center focus:outline-none"
                                 >
                                     <span className="mr-2 text-gray-700 dark:text-white">
-                                        {user?.username}
+                                        {userInfo?.username}
                                     </span>
                                     <img
                                         className="h-8 w-8 rounded-full object-cover"
